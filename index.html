@@ -76,7 +76,7 @@
 
   label{display:block;font-size:14px;font-weight:700;letter-spacing:.01em;color:var(--ink);margin-bottom:6px;margin-top:20px;}
   label:first-of-type{margin-top:0;}
-  input[type=text],input[type=tel],input[type=password],select.field{width:100%;padding:11px 13px;border:1px solid var(--hairline);border-radius:8px;font-family:'Inter',sans-serif;font-size:16px;background:#FFFFFF;color:var(--ink);border-width:1.5px;}
+  input[type=text],input[type=tel],input[type=number],input[type=password],select.field{width:100%;padding:11px 13px;border:1px solid var(--hairline);border-radius:8px;font-family:'Inter',sans-serif;font-size:16px;background:#FFFFFF;color:var(--ink);border-width:1.5px;}
   ::placeholder{color:#5A738A;opacity:1;}
   input:focus,select:focus{outline:2px solid var(--night);outline-offset:1px;border-color:var(--night);}
   .hint{font-size:12.5px;color:var(--ink-soft);margin-top:5px;}
@@ -166,6 +166,29 @@
   .grid-form label{margin-top:0;}
   .grid-form .full{grid-column:1 / -1;}
 
+
+  /* ===== Formulaire en 5 étapes ===== */
+  .stepper{display:flex;align-items:flex-start;justify-content:space-between;gap:4px;margin:0 0 6px;padding:0;list-style:none;position:relative;}
+  .stepper li{flex:1;text-align:center;position:relative;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;}
+  .stepper li .dot{width:30px;height:30px;border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;background:#fff;border:2px solid var(--hairline);color:var(--ink-soft);position:relative;z-index:2;transition:all .2s;}
+  .stepper li::before{content:'';position:absolute;top:14px;left:-50%;width:100%;height:3px;background:var(--hairline);z-index:1;}
+  .stepper li:first-child::before{display:none;}
+  .stepper li.done::before,.stepper li.active::before{background:var(--night);}
+  .stepper li.active .dot{background:var(--night);border-color:var(--night);color:#fff;box-shadow:0 0 0 4px rgba(142,201,250,.55);}
+  .stepper li.done .dot{background:var(--green);border-color:var(--green);color:#fff;}
+  .stepper li.active{color:var(--night-deep);}
+  .step-count{text-align:center;font-size:13px;color:var(--ink-soft);margin:10px 0 18px;font-weight:600;}
+  .step{display:none;animation:stepIn .22s ease;}
+  .step.active{display:block;}
+  .step-title{font-family:'Fraunces',serif;font-size:19px;font-weight:700;color:var(--night-deep);margin:0 0 4px;}
+  .step-desc{font-size:14px;color:var(--ink-soft);margin:0 0 18px;}
+  @keyframes stepIn{from{opacity:0;transform:translateX(10px);}to{opacity:1;transform:none;}}
+  .step-nav{display:flex;gap:10px;margin-top:28px;}
+  .step-nav .btn-primary{flex:2;}
+  .step-nav .btn-back{flex:1;padding:14px;border:1.5px solid var(--night);border-radius:9px;background:#fff;color:var(--night-deep);font-family:'Inter',sans-serif;font-weight:600;font-size:14.5px;cursor:pointer;}
+  .step-nav .btn-back:hover{background:var(--accent-soft);}
+  @media (max-width:560px){ .stepper li{font-size:0;} .stepper li .dot{font-size:14px;} }
+
   @media (max-width:560px){
     .wrap{padding:20px 14px 60px;}
     .card{padding:22px 18px;}
@@ -213,6 +236,18 @@
 
       <div class="banner-warn" id="config-warn" style="display:none;">Plate-forme non connectée : renseignez l'adresse du serveur (constante <b>API_URL</b>) dans le fichier avant de l'utiliser.</div>
 
+      <ol class="stepper" id="stepper">
+        <li data-s="1"><div class="dot">1</div>Identité</li>
+        <li data-s="2"><div class="dot">2</div>Comité</li>
+        <li data-s="3"><div class="dot">3</div>Électeur</li>
+        <li data-s="4"><div class="dot">4</div>Photo</li>
+        <li data-s="5"><div class="dot">5</div>Validation</li>
+      </ol>
+      <p class="step-count" id="step-count"></p>
+
+      <div class="step active" data-step="1">
+      <p class="step-title">Votre identité</p>
+      <p class="step-desc">Vos informations personnelles.</p>
       <label for="nom">Nom complet</label>
       <input type="text" id="nom" placeholder="Prénom et nom" autocomplete="name" style="text-transform:uppercase;" />
 
@@ -224,6 +259,14 @@
       <label for="tel">Téléphone</label>
       <input type="tel" id="tel" placeholder="Ex : 77 123 45 67" />
 
+      <label for="age">Âge</label>
+      <input type="number" id="age" placeholder="Ex : 32" min="5" max="120" inputmode="numeric" />
+
+      </div>
+
+      <div class="step" data-step="2">
+      <p class="step-title">Votre quartier et votre comité</p>
+      <p class="step-desc">Où habitez-vous et à quel comité adhérez-vous ?</p>
       <label for="quartier">Quartier / Adresse</label>
       <input type="text" id="quartier" placeholder="Ex : Quartier, Koungheul" />
 
@@ -231,7 +274,12 @@
       <select id="comite" class="field"><option value="">— Choisir votre comité —</option></select>
       <div class="hint" id="comite-hint">Choisissez le comité auquel vous adhérez. Si vous avez scanné le QR code de votre responsable, il est déjà sélectionné.</div>
 
-      <label style="display:flex;align-items:center;gap:10px;margin-top:20px;cursor:pointer;background:var(--accent-soft);border:1px solid var(--sky);border-radius:10px;padding:11px 13px;">
+      </div>
+
+      <div class="step" data-step="3">
+      <p class="step-title">Votre situation d'électeur</p>
+      <p class="step-desc">Centre et bureau de vote, carte d'électeur.</p>
+      <label style="display:flex;align-items:center;gap:10px;margin-top:0;cursor:pointer;background:var(--accent-soft);border:1px solid var(--sky);border-radius:10px;padding:11px 13px;">
         <input type="checkbox" id="pas-electeur" style="width:20px;height:20px;accent-color:var(--night);" />
         <span style="font-size:14.5px;">Pas encore électeur <span style="font-weight:400;color:var(--ink-soft);">(centre, bureau et carte d'électeur non requis)</span></span>
       </label>
@@ -250,6 +298,11 @@
       <label for="carte-electeur">Numéro de carte d'électeur <span style="font-weight:400;color:var(--ink-soft);">(optionnel)</span></label>
       <input type="text" id="carte-electeur" placeholder="Numéro de la carte d'électeur (facultatif)" />
 
+      </div>
+
+      <div class="step" data-step="4">
+      <p class="step-title">Votre photo</p>
+      <p class="step-desc">Elle figurera sur votre carte de membre.</p>
       <label for="photo">Photo du membre</label>
       <div class="photo-box">
         <div class="photo-preview" id="photo-preview">Aucune photo</div>
@@ -264,6 +317,11 @@
         </div>
       </div>
 
+      </div>
+
+      <div class="step" data-step="5">
+      <p class="step-title">Confirmation et signature</p>
+      <p class="step-desc">Confirmez votre adhésion puis signez.</p>
       <label>Adhésion au mouvement</label>
       <div class="accord-group">
         <label class="accord-opt oui" id="opt-oui">
@@ -286,9 +344,15 @@
         </div>
       </div>
 
+      </div>
+
       <div class="submit-row">
-        <button class="btn-primary" id="submit-btn">Confirmer et envoyer</button>
         <p class="error-msg" id="error-msg"></p>
+        <div class="step-nav">
+          <button type="button" class="btn-back" id="step-prev" style="display:none;">← Précédent</button>
+          <button type="button" class="btn-primary" id="step-next">Suivant →</button>
+          <button type="button" class="btn-primary" id="submit-btn" style="display:none;">Confirmer et envoyer</button>
+        </div>
       </div>
     </div>
 
@@ -674,10 +738,55 @@ cniInput.addEventListener('input', ()=>{
   }, 500);
 });
 
+
+// ================= FORMULAIRE EN 5 ÉTAPES =================
+const TOTAL_STEPS = 5;
+const STEP_NAMES = ['Identité','Comité','Électeur','Photo','Validation'];
+let currentStep = 1;
+function showStep(n, noScroll){
+  currentStep = Math.max(1, Math.min(TOTAL_STEPS, n));
+  document.querySelectorAll('#form-card .step').forEach(el=>el.classList.toggle('active', Number(el.dataset.step) === currentStep));
+  document.querySelectorAll('#stepper li').forEach(li=>{
+    const k = Number(li.dataset.s);
+    li.classList.toggle('active', k === currentStep);
+    li.classList.toggle('done', k < currentStep);
+    li.querySelector('.dot').textContent = k < currentStep ? '✓' : k;
+  });
+  document.getElementById('step-count').textContent = 'Étape ' + currentStep + ' sur ' + TOTAL_STEPS + ' — ' + STEP_NAMES[currentStep-1];
+  document.getElementById('step-prev').style.display = currentStep > 1 ? '' : 'none';
+  document.getElementById('step-next').style.display = currentStep < TOTAL_STEPS ? '' : 'none';
+  document.getElementById('submit-btn').style.display = currentStep === TOTAL_STEPS ? '' : 'none';
+  document.getElementById('error-msg').style.display = 'none';
+  if(currentStep === TOTAL_STEPS){ setTimeout(resizeCanvas, 30); }
+  const top = document.getElementById('stepper');
+  if(!noScroll && top && top.scrollIntoView) top.scrollIntoView({behavior:'smooth', block:'start'});
+}
+function missingForStep(n){
+  const g = id => document.getElementById(id).value.trim();
+  const notVoter = document.getElementById('pas-electeur').checked;
+  const m = [];
+  if(n === 1){ if(!g('nom')) m.push('nom'); if(!g('cni')) m.push('CNI'); if(!g('tel')) m.push('téléphone'); const a = Number(g('age')); if(!g('age') || !(a >= 5 && a <= 120)) m.push('âge (entre 5 et 120)'); }
+  if(n === 2){ if(!g('quartier')) m.push('quartier'); if(!g('comite')) m.push('comité'); }
+  if(n === 3 && !notVoter){ if(!g('centre-vote')) m.push('centre de vote'); if(!g('bureau-vote')) m.push('bureau de vote'); }
+  if(n === 4){ if(!photoData) m.push('photo'); }
+  if(n === 5){ if(!document.querySelector('input[name=accord]:checked')) m.push('adhésion'); if(!hasSignature) m.push('signature'); }
+  return m;
+}
+document.getElementById('step-next').addEventListener('click', ()=>{
+  const miss = missingForStep(currentStep), err = document.getElementById('error-msg');
+  if(miss.length){ err.textContent = 'Merci de compléter : ' + miss.join(', ') + '.'; err.style.display = 'block'; return; }
+  showStep(currentStep + 1);
+});
+document.getElementById('step-prev').addEventListener('click', ()=>showStep(currentStep - 1));
+document.querySelectorAll('#form-card input[type=text], #form-card input[type=tel], #form-card input[type=number]').forEach(inp=>{
+  inp.addEventListener('keydown', e=>{ if(e.key === 'Enter'){ e.preventDefault(); if(currentStep < TOTAL_STEPS) document.getElementById('step-next').click(); } });
+});
+showStep(1, true);
+
 // ================= ENVOI =================
 document.getElementById('submit-btn').addEventListener('click', async ()=>{
   const g = id => document.getElementById(id).value.trim();
-  const nom = g('nom').toUpperCase(), cni = g('cni'), quartier = g('quartier'), telephone = g('tel');
+  const nom = g('nom').toUpperCase(), cni = g('cni'), quartier = g('quartier'), telephone = g('tel'), age = g('age');
   const comite = g('comite'), centreVote = g('centre-vote'), bureauVote = g('bureau-vote'), carteElecteur = g('carte-electeur');
   const notVoter = document.getElementById('pas-electeur').checked;
   const accordEl = document.querySelector('input[name=accord]:checked');
@@ -686,11 +795,12 @@ document.getElementById('submit-btn').addEventListener('click', async ()=>{
 
   if(!API_READY){ errorEl.textContent = "La plate-forme n'est pas encore connectée au serveur (API_URL)."; errorEl.style.display='block'; return; }
   const missing = [];
-  if(!nom) missing.push('nom'); if(!cni) missing.push('CNI'); if(!telephone) missing.push('téléphone');
+  if(!nom) missing.push('nom'); if(!cni) missing.push('CNI'); if(!telephone) missing.push('téléphone'); if(!age || !(Number(age) >= 5 && Number(age) <= 120)) missing.push('âge (entre 5 et 120)');
   if(!quartier) missing.push('quartier'); if(!comite) missing.push('comité'); if(!centreVote && !notVoter) missing.push('centre de vote');
   if(!bureauVote && !notVoter) missing.push('bureau de vote'); if(!photoData) missing.push('photo'); if(!accordEl) missing.push('adhésion');
   if(!hasSignature) missing.push('signature');
   if(missing.length){
+    for(let st=1; st<=TOTAL_STEPS; st++){ if(missingForStep(st).length){ showStep(st); break; } }
     errorEl.textContent = 'Merci de compléter : ' + missing.join(', ') + '.';
     errorEl.style.display='block';
     return;
@@ -699,7 +809,7 @@ document.getElementById('submit-btn').addEventListener('click', async ()=>{
   const btn = document.getElementById('submit-btn');
   btn.disabled = true; btn.textContent = 'Envoi en cours…';
   const record = {
-    nom, matricule: cni, section: quartier, telephone, comite, centreVote, bureauVote, carteElecteur,
+    nom, matricule: cni, age, section: quartier, telephone, comite, centreVote, bureauVote, carteElecteur,
     accord: accordEl.value, signature: signatureDataURL(), photo: photoData, date: new Date().toISOString()
   };
   try{
@@ -710,6 +820,7 @@ document.getElementById('submit-btn').addEventListener('click', async ()=>{
       <div><span class="k">N° de membre</span><span class="v">${escapeHtml(resData.numero||'—')}</span></div>
       <div><span class="k">Nom</span><span class="v">${escapeHtml(nom)}</span></div>
       <div><span class="k">CNI</span><span class="v">${escapeHtml(cni)}</span></div>
+      <div><span class="k">Âge</span><span class="v">${escapeHtml(age)} ans</span></div>
       <div><span class="k">Comité</span><span class="v">${escapeHtml(comite)}</span></div>
       <div><span class="k">Quartier</span><span class="v">${escapeHtml(quartier)}</span></div>
       <div><span class="k">Centre / Bureau</span><span class="v">${notVoter ? escapeHtml(NOT_VOTER) : escapeHtml(centreVote) + ' / ' + escapeHtml(bureauVote)}</span></div>
@@ -725,7 +836,7 @@ document.getElementById('submit-btn').addEventListener('click', async ()=>{
 });
 
 document.getElementById('new-entry-btn').addEventListener('click', ()=>{
-  ['nom','cni','quartier','tel','centre-vote','bureau-vote','carte-electeur'].forEach(id=>{ const el=document.getElementById(id); el.value=''; el.dataset.prev=''; });
+  ['nom','cni','age','quartier','tel','centre-vote','bureau-vote','carte-electeur'].forEach(id=>{ const el=document.getElementById(id); el.value=''; el.dataset.prev=''; });
   document.getElementById('pas-electeur').checked = false; applyNotVoter();
   document.getElementById('photo').value=''; setPhoto('');
   document.getElementById('comite').value = urlComite || '';
@@ -735,6 +846,7 @@ document.getElementById('new-entry-btn').addEventListener('click', ()=>{
   document.getElementById('dup-warning').style.display='none';
   document.getElementById('confirm-card').style.display='none';
   document.getElementById('form-card').style.display='block';
+  showStep(1);
 });
 
 // ================= CONNEXION RESPONSABLE =================
@@ -1072,6 +1184,7 @@ async function drawCard(r, side){
     const rows = [
       ['N° de membre', r.numero || '—'],
       ['CNI', r.matricule],
+      ['Âge', r.age ? r.age + ' ans' : '—'],
       ['Téléphone', r.telephone],
       ['Quartier', r.section],
       ['Comité', r.comite || '—'],
@@ -1174,6 +1287,7 @@ function ficheHTML(r){
         <tr><td class="k">N° de membre</td><td class="v">${escapeHtml(r.numero||'—')}</td></tr>
         <tr><td class="k">Nom complet</td><td class="v">${escapeHtml(r.nom)}</td></tr>
         <tr><td class="k">Numéro CNI</td><td class="v">${escapeHtml(r.matricule)}</td></tr>
+        <tr><td class="k">Âge</td><td class="v">${r.age ? escapeHtml(r.age) + ' ans' : '—'}</td></tr>
         <tr><td class="k">Téléphone</td><td class="v">${escapeHtml(r.telephone)}</td></tr>
         <tr><td class="k">Quartier / Adresse</td><td class="v">${escapeHtml(r.section)}</td></tr>
         <tr><td class="k">Comité</td><td class="v">${escapeHtml(r.comite||'—')}</td></tr>
@@ -1310,11 +1424,11 @@ document.getElementById('refresh-btn').addEventListener('click', loadSubmissions
 
 document.getElementById('export-btn').addEventListener('click', ()=>{
   if(currentRecords.length===0) return;
-  const headers = ['NumeroMembre','Nom','CNI','Telephone','Quartier','Comite','CentreVote','BureauVote','CarteElecteur','Adhesion','Date'];
+  const headers = ['NumeroMembre','Nom','CNI','Age','Telephone','Quartier','Comite','CentreVote','BureauVote','CarteElecteur','Adhesion','Date'];
   const rows = currentRecords.map(r=>{
     const d = new Date(r.date);
     const ds = isNaN(d) ? '' : d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-    return [r.numero||'', r.nom, r.matricule, r.telephone, r.section, r.comite||'', r.centreVote||'', r.bureauVote||'', r.carteElecteur||'', r.accord, ds]
+    return [r.numero||'', r.nom, r.matricule, r.age||'', r.telephone, r.section, r.comite||'', r.centreVote||'', r.bureauVote||'', r.carteElecteur||'', r.accord, ds]
       .map(v => `"${String(v).replace(/"/g,'""')}"`).join(',');
   });
   const blob = new Blob(["﻿" + headers.join(',') + '\n' + rows.join('\n')], {type:'text/csv;charset=utf-8;'});
