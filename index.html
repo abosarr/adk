@@ -231,9 +231,14 @@
       <select id="comite" class="field"><option value="">— Choisir votre comité —</option></select>
       <div class="hint" id="comite-hint">Choisissez le comité auquel vous adhérez. Si vous avez scanné le QR code de votre responsable, il est déjà sélectionné.</div>
 
+      <label style="display:flex;align-items:center;gap:10px;margin-top:20px;cursor:pointer;background:var(--accent-soft);border:1px solid var(--sky);border-radius:10px;padding:11px 13px;">
+        <input type="checkbox" id="pas-electeur" style="width:20px;height:20px;accent-color:var(--night);" />
+        <span style="font-size:14.5px;">Pas encore électeur <span style="font-weight:400;color:var(--ink-soft);">(centre, bureau et carte d'électeur non requis)</span></span>
+      </label>
+
       <div class="row2">
         <div>
-          <label for="centre-vote">Centre de vote</label>
+          <label for="centre-vote" style="margin-top:20px;">Centre de vote</label>
           <input type="text" id="centre-vote" placeholder="Ex : École élémentaire de …" />
         </div>
         <div>
@@ -487,6 +492,20 @@ function fillComiteSelect(){
   }catch(e){}
 })();
 
+// ================= PAS ENCORE ÉLECTEUR =================
+const NOT_VOTER = 'Pas encore électeur';
+const VOTER_FIELDS = ['centre-vote','bureau-vote','carte-electeur'];
+function applyNotVoter(){
+  const on = document.getElementById('pas-electeur').checked;
+  VOTER_FIELDS.forEach(id=>{
+    const el = document.getElementById(id);
+    el.disabled = on;
+    if(on){ el.dataset.prev = el.value; el.value = NOT_VOTER; el.style.background = '#E4F2FE'; }
+    else { if(el.value === NOT_VOTER) el.value = el.dataset.prev || ''; el.style.background = ''; }
+  });
+}
+document.getElementById('pas-electeur').addEventListener('change', applyNotVoter);
+
 // ================= ACCORD =================
 document.querySelectorAll('.accord-opt').forEach(opt=>{
   opt.addEventListener('click', ()=>{
@@ -659,6 +678,7 @@ document.getElementById('submit-btn').addEventListener('click', async ()=>{
   const g = id => document.getElementById(id).value.trim();
   const nom = g('nom').toUpperCase(), cni = g('cni'), quartier = g('quartier'), telephone = g('tel');
   const comite = g('comite'), centreVote = g('centre-vote'), bureauVote = g('bureau-vote'), carteElecteur = g('carte-electeur');
+  const notVoter = document.getElementById('pas-electeur').checked;
   const accordEl = document.querySelector('input[name=accord]:checked');
   const errorEl = document.getElementById('error-msg');
   errorEl.style.display='none';
@@ -666,8 +686,8 @@ document.getElementById('submit-btn').addEventListener('click', async ()=>{
   if(!API_READY){ errorEl.textContent = "La plate-forme n'est pas encore connectée au serveur (API_URL)."; errorEl.style.display='block'; return; }
   const missing = [];
   if(!nom) missing.push('nom'); if(!cni) missing.push('CNI'); if(!telephone) missing.push('téléphone');
-  if(!quartier) missing.push('quartier'); if(!comite) missing.push('comité'); if(!centreVote) missing.push('centre de vote');
-  if(!bureauVote) missing.push('bureau de vote'); if(!photoData) missing.push('photo'); if(!accordEl) missing.push('adhésion');
+  if(!quartier) missing.push('quartier'); if(!comite) missing.push('comité'); if(!centreVote && !notVoter) missing.push('centre de vote');
+  if(!bureauVote && !notVoter) missing.push('bureau de vote'); if(!photoData) missing.push('photo'); if(!accordEl) missing.push('adhésion');
   if(!hasSignature) missing.push('signature');
   if(missing.length){
     errorEl.textContent = 'Merci de compléter : ' + missing.join(', ') + '.';
@@ -691,7 +711,7 @@ document.getElementById('submit-btn').addEventListener('click', async ()=>{
       <div><span class="k">CNI</span><span class="v">${escapeHtml(cni)}</span></div>
       <div><span class="k">Comité</span><span class="v">${escapeHtml(comite)}</span></div>
       <div><span class="k">Quartier</span><span class="v">${escapeHtml(quartier)}</span></div>
-      <div><span class="k">Centre / Bureau</span><span class="v">${escapeHtml(centreVote)} / ${escapeHtml(bureauVote)}</span></div>
+      <div><span class="k">Centre / Bureau</span><span class="v">${notVoter ? escapeHtml(NOT_VOTER) : escapeHtml(centreVote) + ' / ' + escapeHtml(bureauVote)}</span></div>
       <div><span class="k">Date</span><span class="v">${new Date().toLocaleString('fr-FR')}</span></div>`;
     document.getElementById('form-card').style.display='none';
     document.getElementById('confirm-card').style.display='block';
@@ -704,7 +724,8 @@ document.getElementById('submit-btn').addEventListener('click', async ()=>{
 });
 
 document.getElementById('new-entry-btn').addEventListener('click', ()=>{
-  ['nom','cni','quartier','tel','centre-vote','bureau-vote','carte-electeur'].forEach(id=>document.getElementById(id).value='');
+  ['nom','cni','quartier','tel','centre-vote','bureau-vote','carte-electeur'].forEach(id=>{ const el=document.getElementById(id); el.value=''; el.dataset.prev=''; });
+  document.getElementById('pas-electeur').checked = false; applyNotVoter();
   document.getElementById('photo').value=''; setPhoto('');
   document.getElementById('comite').value = urlComite || '';
   document.querySelectorAll('.accord-opt').forEach(o=>o.classList.remove('checked'));
@@ -919,7 +940,7 @@ function renderTable(records, offset){
       <td><b>${escapeHtml(r.nom)}</b><br><span class="mono" style="color:var(--ink-soft);">${escapeHtml(r.numero||'')}</span></td>
       <td class="mono hm">${escapeHtml(r.matricule)}</td>
       <td>${escapeHtml(r.comite||'—')}<br><span class="hint">${escapeHtml(r.section||'')}</span></td>
-      <td class="hm">${escapeHtml(r.centreVote||'—')}<br><span class="hint">Bureau ${escapeHtml(r.bureauVote||'—')}</span></td>
+      <td class="hm">${escapeHtml(r.centreVote||'—')}<br><span class="hint">${r.bureauVote===NOT_VOTER ? '' : 'Bureau ' + escapeHtml(r.bureauVote||'—')}</span></td>
       <td class="mono hm">${escapeHtml(r.telephone)}</td>
       <td><span class="pill ${r.accord==='Oui'?'oui':'non'}">${escapeHtml(r.accord)}</span></td>
       <td class="hm">${r.signature ? `<img class="sig-thumb" src="${safeSrc(r.signature)}" onclick="openLightbox(currentRecords[${idx}].signature)" />` : '—'}</td>
@@ -1024,7 +1045,7 @@ async function drawCard(r, side){
     lines.forEach((ln,i)=> g.fillText(ln, 56, 306 + i*(nameSize+6)));
     let y = 306 + (lines.length-1)*(nameSize+6) + 44;
     fitText(g, 'Comité : ' + (r.comite || '—'), 56, y, 650, 28, 700, SANS, NIGHT, 15); y += 36;
-    fitText(g, 'Centre de vote : ' + (r.centreVote || '—') + '  ·  Bureau : ' + (r.bureauVote || '—'), 56, y, 650, 23, 700, SANS, NIGHT, 13);
+    fitText(g, r.centreVote === NOT_VOTER ? 'Pas encore électeur' : 'Centre de vote : ' + (r.centreVote || '—') + '  ·  Bureau : ' + (r.bureauVote || '—'), 56, y, 650, 23, 700, SANS, NIGHT, 13);
     // photo
     const px = 760, py = 236, pw = 200, ph = 250;
     g.fillStyle = '#EAF5FE'; roundRect(g, px-6, py-6, pw+12, ph+12, 16); g.fill();
