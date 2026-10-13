@@ -97,6 +97,14 @@
   .accord-opt .sub{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
   .accord-opt.oui.checked{border-color:var(--green);background:var(--green-soft);}
 
+  .pay-group{display:flex;flex-direction:column;gap:10px;margin-top:8px;}
+  .pay-opt{display:block;position:relative;border:1.5px solid var(--hairline);border-radius:10px;padding:13px 14px;cursor:pointer;background:#FBFDFF;transition:border-color .15s, background .15s;margin:0;}
+  .pay-opt input[type=radio]{position:absolute;opacity:0;pointer-events:none;}
+  .pay-opt .label{font-weight:700;font-size:15.5px;color:var(--ink);}
+  .pay-opt .sub{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+  .pay-opt.checked{border-color:var(--night);background:var(--accent-soft);box-shadow:0 0 0 3px rgba(142,201,250,.5);}
+  .pay-amount-box{display:none;margin-top:10px;}
+  .pay-amount-box.show{display:block;}
   .sig-wrap{margin-top:8px;}
   .sig-box{position:relative;border:1.5px dashed var(--hairline);border-radius:10px;background:#FBFDFF;overflow:hidden;}
   canvas#sigpad{display:block;width:100%;height:160px;touch-action:none;cursor:crosshair;}
@@ -155,6 +163,11 @@
 
   .lightbox{position:fixed;inset:0;background:rgba(20,38,58,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:20px;}
   .lightbox.show{display:flex;}
+  .msg-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid #E3EEF8;font-size:13.5px;}
+  .msg-row.sent{opacity:.55;}
+  .msg-row .who{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .msg-row .who small{display:block;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;font-size:11.5px;}
+  textarea#msg-text{width:100%;min-height:120px;padding:11px 13px;border:1.5px solid var(--hairline);border-radius:8px;font-family:'Inter',sans-serif;font-size:15px;color:var(--ink);resize:vertical;}
   .lightbox > img{max-width:400px;width:100%;background:#fff;border-radius:10px;padding:16px;}
   .refresh-note{font-size:12.5px;color:var(--ink-soft);margin-bottom:12px;}
   .contact-note{font-size:14px;color:var(--ink);background:var(--accent-soft);border:1px solid var(--sky);border-radius:10px;padding:10px 14px;margin-bottom:16px;}
@@ -321,7 +334,7 @@
 
       <div class="step" data-step="5">
       <p class="step-title">Confirmation et signature</p>
-      <p class="step-desc">Confirmez votre adhésion puis signez.</p>
+      <p class="step-desc">Confirmez votre adhésion, choisissez votre contribution puis signez.</p>
       <label>Adhésion au mouvement</label>
       <div class="accord-group">
         <label class="accord-opt oui" id="opt-oui">
@@ -329,6 +342,25 @@
           <div class="label">Oui, j'adhère</div>
           <div class="sub">Je rejoins le Mouvement ADK</div>
         </label>
+      </div>
+
+      <label>Contribution financière</label>
+      <div class="pay-group" id="pay-group">
+        <label class="pay-opt" data-pay="symbolique">
+          <input type="radio" name="paiement" value="symbolique" />
+          <div class="label">Paiement symbolique : <span id="pay-sym-amount"></span></div>
+          <div class="sub">Contribution de base pour rejoindre le mouvement</div>
+        </label>
+        <label class="pay-opt" data-pay="superieur">
+          <input type="radio" name="paiement" value="superieur" />
+          <div class="label">Un montant supérieur</div>
+          <div class="sub">Je soutiens le mouvement avec une contribution plus importante</div>
+        </label>
+      </div>
+      <div class="pay-amount-box" id="pay-amount-box">
+        <label for="montant-autre" style="margin-top:0;">Montant choisi (F CFA)</label>
+        <input type="number" id="montant-autre" inputmode="numeric" min="0" step="500" placeholder="" />
+        <div class="hint" id="pay-amount-hint"></div>
       </div>
 
       <label>Signature électronique</label>
@@ -411,6 +443,7 @@
         <button class="btn-export" id="print-cards-btn">Cartes de membre</button>
         <button class="btn-export" id="png-all-btn" title="Télécharge chaque carte (recto et verso) en image PNG">Cartes PNG</button>
         <button class="btn-export" id="export-btn">Exporter CSV</button>
+        <button class="btn-export btn-dark" id="msg-btn" title="Envoyer un message aux adhérents affichés">✉ Message aux adhérents</button>
         <button class="btn-export" id="refresh-btn">Actualiser</button>
       </div>
       <p class="refresh-note">Les fiches, cartes et exports respectent les filtres en cours. Cliquez une photo ou une signature pour l'agrandir.</p>
@@ -465,6 +498,23 @@
   </div>
 </div>
 
+<div class="lightbox" id="msg-modal">
+  <div class="card" style="max-width:520px;width:100%;padding:22px 20px;max-height:96vh;overflow-y:auto;">
+    <p class="doc-title" style="margin-bottom:4px;">Message aux adhérents</p>
+    <p class="hint" id="msg-scope" style="margin-bottom:12px;"></p>
+    <label for="msg-text" style="margin-top:0;">Votre message</label>
+    <textarea id="msg-text" placeholder="Écrivez votre message… Utilisez {nom} pour insérer le nom de l'adhérent."></textarea>
+    <div class="hint">{nom} est remplacé par le nom de chaque adhérent. Un clic sur « Envoyer » dans WhatsApp suffit pour chacun.</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:16px;">
+      <button type="button" class="btn-primary" id="msg-wa-next">Envoyer par WhatsApp (suivant)</button>
+    </div>
+    <p class="hint" id="msg-status" style="margin-top:10px;"></p>
+    <p class="sub-title" style="margin-top:16px;">Destinataires</p>
+    <div id="msg-list"></div>
+    <button type="button" class="btn-export" id="msg-close" style="width:100%;padding:11px;background:none;border:none;color:var(--ink-soft);margin-top:10px;">Fermer</button>
+  </div>
+</div>
+
 <div class="lightbox" id="qr-modal">
   <div class="card" style="max-width:380px;width:100%;text-align:center;padding:28px 24px;max-height:96vh;overflow-y:auto;">
     <p class="doc-title" style="margin-bottom:4px;">QR code d'adhésion</p>
@@ -498,6 +548,8 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyBqdbUA4xsOuYI_s8oia5Y
 const CODE_COORDINATION = "ADK2026";
 // Couleurs du recto de la carte : "drapeau" (couleurs du Sénégal) ou "adk" (bleu ciel / bleu nuit)
 const CARTE_THEME = "drapeau";
+// 3) Montant du paiement symbolique (F CFA). Le membre peut aussi choisir un montant supérieur.
+const PAIEMENT_SYMBOLIQUE = 500;
 
 const API_READY = API_URL && API_URL.indexOf('http') === 0;
 if(!API_READY){ document.getElementById('config-warn').style.display='block'; }
@@ -739,6 +791,37 @@ cniInput.addEventListener('input', ()=>{
 });
 
 
+
+// ---- contribution financière (paiement symbolique ou montant supérieur)
+function fmtFcfa(n){ return Number(n).toLocaleString('fr-FR') + ' F CFA'; }
+document.getElementById('pay-sym-amount').textContent = fmtFcfa(PAIEMENT_SYMBOLIQUE);
+document.getElementById('montant-autre').placeholder = 'Plus de ' + PAIEMENT_SYMBOLIQUE;
+document.getElementById('pay-amount-hint').textContent = 'Doit être supérieur au paiement symbolique (' + fmtFcfa(PAIEMENT_SYMBOLIQUE) + ').';
+function payChoice(){ const el = document.querySelector('input[name=paiement]:checked'); return el ? el.value : ''; }
+function payAmount(){
+  const c = payChoice();
+  if(c === 'symbolique') return PAIEMENT_SYMBOLIQUE;
+  if(c === 'superieur'){ const v = Number(document.getElementById('montant-autre').value); return Number.isFinite(v) ? Math.round(v) : 0; }
+  return 0;
+}
+function payMissing(){
+  const c = payChoice();
+  if(!c) return 'contribution';
+  if(c === 'superieur' && !(payAmount() > PAIEMENT_SYMBOLIQUE)) return 'montant supérieur à ' + fmtFcfa(PAIEMENT_SYMBOLIQUE);
+  return '';
+}
+function refreshPayUI(){
+  const c = payChoice();
+  document.querySelectorAll('.pay-opt').forEach(o=>o.classList.toggle('checked', o.dataset.pay === c));
+  document.getElementById('pay-amount-box').classList.toggle('show', c === 'superieur');
+}
+document.querySelectorAll('input[name=paiement]').forEach(r=>r.addEventListener('change', refreshPayUI));
+function resetPay(){
+  document.querySelectorAll('input[name=paiement]').forEach(r=>r.checked=false);
+  document.getElementById('montant-autre').value = '';
+  refreshPayUI();
+}
+
 // ================= FORMULAIRE EN 5 ÉTAPES =================
 const TOTAL_STEPS = 5;
 const STEP_NAMES = ['Identité','Comité','Électeur','Photo','Validation'];
@@ -769,7 +852,7 @@ function missingForStep(n){
   if(n === 2){ if(!g('quartier')) m.push('quartier'); if(!g('comite')) m.push('comité'); }
   if(n === 3 && !notVoter){ if(!g('centre-vote')) m.push('centre de vote'); if(!g('bureau-vote')) m.push('bureau de vote'); }
   if(n === 4){ if(!photoData) m.push('photo'); }
-  if(n === 5){ if(!document.querySelector('input[name=accord]:checked')) m.push('adhésion'); if(!hasSignature) m.push('signature'); }
+  if(n === 5){ if(!document.querySelector('input[name=accord]:checked')) m.push('adhésion'); const pm = payMissing(); if(pm) m.push(pm); if(!hasSignature) m.push('signature'); }
   return m;
 }
 document.getElementById('step-next').addEventListener('click', ()=>{
@@ -798,6 +881,7 @@ document.getElementById('submit-btn').addEventListener('click', async ()=>{
   if(!nom) missing.push('nom'); if(!cni) missing.push('CNI'); if(!telephone) missing.push('téléphone'); if(!age || !(Number(age) >= 5 && Number(age) <= 120)) missing.push('âge (entre 5 et 120)');
   if(!quartier) missing.push('quartier'); if(!comite) missing.push('comité'); if(!centreVote && !notVoter) missing.push('centre de vote');
   if(!bureauVote && !notVoter) missing.push('bureau de vote'); if(!photoData) missing.push('photo'); if(!accordEl) missing.push('adhésion');
+  { const pm = payMissing(); if(pm) missing.push(pm); }
   if(!hasSignature) missing.push('signature');
   if(missing.length){
     for(let st=1; st<=TOTAL_STEPS; st++){ if(missingForStep(st).length){ showStep(st); break; } }
@@ -810,7 +894,7 @@ document.getElementById('submit-btn').addEventListener('click', async ()=>{
   btn.disabled = true; btn.textContent = 'Envoi en cours…';
   const record = {
     nom, matricule: cni, age, section: quartier, telephone, comite, centreVote, bureauVote, carteElecteur,
-    accord: accordEl.value, signature: signatureDataURL(), photo: photoData, date: new Date().toISOString()
+    accord: accordEl.value, paiement: payChoice() === 'symbolique' ? 'Symbolique' : 'Supérieur', montant: payAmount(), signature: signatureDataURL(), photo: photoData, date: new Date().toISOString()
   };
   try{
     const res = await fetch(API_URL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(record) });
@@ -824,6 +908,7 @@ document.getElementById('submit-btn').addEventListener('click', async ()=>{
       <div><span class="k">Comité</span><span class="v">${escapeHtml(comite)}</span></div>
       <div><span class="k">Quartier</span><span class="v">${escapeHtml(quartier)}</span></div>
       <div><span class="k">Centre / Bureau</span><span class="v">${notVoter ? escapeHtml(NOT_VOTER) : escapeHtml(centreVote) + ' / ' + escapeHtml(bureauVote)}</span></div>
+      <div><span class="k">Contribution</span><span class="v">${escapeHtml(fmtFcfa(record.montant))}</span></div>
       <div><span class="k">Date</span><span class="v">${new Date().toLocaleString('fr-FR')}</span></div>`;
     document.getElementById('form-card').style.display='none';
     document.getElementById('confirm-card').style.display='block';
@@ -842,6 +927,7 @@ document.getElementById('new-entry-btn').addEventListener('click', ()=>{
   document.getElementById('comite').value = urlComite || '';
   document.querySelectorAll('.accord-opt').forEach(o=>o.classList.remove('checked'));
   document.querySelectorAll('input[name=accord]').forEach(i=>i.checked=false);
+  resetPay();
   clearSignature();
   document.getElementById('dup-warning').style.display='none';
   document.getElementById('confirm-card').style.display='none';
@@ -1295,6 +1381,7 @@ function ficheHTML(r){
         <tr><td class="k">Bureau de vote</td><td class="v">${escapeHtml(r.bureauVote||'—')}</td></tr>
         ${r.carteElecteur ? `<tr><td class="k">Carte d'électeur</td><td class="v">${escapeHtml(r.carteElecteur)}</td></tr>` : ''}
         <tr><td class="k">Adhésion</td><td class="v" style="color:${r.accord==='Oui'?'#0B7A3E':'#C62828'};">${escapeHtml(r.accord)}${r.accord==='Oui' ? ' — Adhésion confirmée' : ''}</td></tr>
+        <tr><td class="k">Contribution</td><td class="v">${r.montant ? escapeHtml(fmtFcfa(r.montant)) + (r.paiement ? ' (' + escapeHtml(r.paiement) + ')' : '') : '—'}</td></tr>
         <tr><td class="k">Date</td><td class="v">${isNaN(d)?'':d.toLocaleDateString('fr-FR')+' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</td></tr>
       </table>
     </div>
@@ -1369,6 +1456,62 @@ document.getElementById('qr-print-btn').addEventListener('click', ()=>{
 });
 
 
+// ================= MESSAGE AUX ADHÉRENTS =================
+function normPhone(t){
+  let d = String(t||'').replace(/\D/g,'');
+  if(d.startsWith('00')) d = d.slice(2);
+  if(d.length === 9) d = '221' + d;
+  return (d.length >= 10 && d.length <= 15) ? d : '';
+}
+let msgRecipients = [], msgSkipped = 0, msgNext = 0;
+function buildMsgRecipients(){
+  const seen = new Set(); msgRecipients = []; msgSkipped = 0;
+  currentRecords.forEach(r=>{
+    const num = normPhone(r.telephone);
+    if(!num){ msgSkipped++; return; }
+    if(seen.has(num)) return;
+    seen.add(num);
+    msgRecipients.push({nom:r.nom||'', tel:r.telephone||'', num, sent:false});
+  });
+  msgNext = 0;
+}
+function msgFor(rec){
+  return document.getElementById('msg-text').value.trim().replace(/\{nom\}/gi, rec.nom);
+}
+function renderMsgList(){
+  document.getElementById('msg-scope').textContent =
+    msgRecipients.length + ' destinataire(s)' + (msgSkipped ? ' (' + msgSkipped + ' sans numéro valide ignoré(s))' : '') +
+    ' — selon les filtres actuels (comité, quartier, recherche).';
+  document.getElementById('msg-list').innerHTML = msgRecipients.map((m,i)=>`<div class="msg-row ${m.sent?'sent':''}">
+    <div class="who">${m.sent?'✓ ':''}<b>${escapeHtml(m.nom)}</b><small>${escapeHtml(m.tel)}</small></div>
+    <div style="display:flex;gap:6px;"><button class="btn-row-print" onclick="sendWa(${i})">WhatsApp</button></div>
+  </div>`).join('') || '<p class="hint">Aucun destinataire avec un numéro valide.</p>';
+  const left = msgRecipients.filter(m=>!m.sent).length;
+  document.getElementById('msg-wa-next').textContent = left ? 'Envoyer par WhatsApp (suivant : ' + left + ' restant(s))' : 'Tous les messages WhatsApp ont été ouverts';
+  document.getElementById('msg-wa-next').disabled = !left;
+}
+function needText(){
+  if(!document.getElementById('msg-text').value.trim()){ document.getElementById('msg-status').textContent = "Écrivez d'abord votre message."; return false; }
+  document.getElementById('msg-status').textContent = ''; return true;
+}
+function sendWa(i){
+  if(!needText()) return;
+  const m = msgRecipients[i]; if(!m) return;
+  window.open('https://wa.me/' + m.num + '?text=' + encodeURIComponent(msgFor(m)), '_blank');
+  m.sent = true; renderMsgList();
+}
+document.getElementById('msg-btn').addEventListener('click', ()=>{
+  buildMsgRecipients(); renderMsgList();
+  document.getElementById('msg-status').textContent = '';
+  document.getElementById('msg-modal').classList.add('show');
+});
+document.getElementById('msg-close').addEventListener('click', ()=>document.getElementById('msg-modal').classList.remove('show'));
+document.getElementById('msg-modal').addEventListener('click', e=>{ if(e.target.id==='msg-modal') document.getElementById('msg-modal').classList.remove('show'); });
+document.getElementById('msg-wa-next').addEventListener('click', ()=>{
+  const i = msgRecipients.findIndex(m=>!m.sent);
+  if(i >= 0) sendWa(i);
+});
+
 // ---- QR code (affiche PNG) de chaque comité
 async function drawComitePoster(nom){
   try{ await Promise.all([document.fonts.load('700 40px Inter'), document.fonts.load('400 30px Inter')]); }catch(e){}
@@ -1424,11 +1567,11 @@ document.getElementById('refresh-btn').addEventListener('click', loadSubmissions
 
 document.getElementById('export-btn').addEventListener('click', ()=>{
   if(currentRecords.length===0) return;
-  const headers = ['NumeroMembre','Nom','CNI','Age','Telephone','Quartier','Comite','CentreVote','BureauVote','CarteElecteur','Adhesion','Date'];
+  const headers = ['NumeroMembre','Nom','CNI','Age','Telephone','Quartier','Comite','CentreVote','BureauVote','CarteElecteur','Adhesion','TypePaiement','MontantFCFA','Date'];
   const rows = currentRecords.map(r=>{
     const d = new Date(r.date);
     const ds = isNaN(d) ? '' : d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-    return [r.numero||'', r.nom, r.matricule, r.age||'', r.telephone, r.section, r.comite||'', r.centreVote||'', r.bureauVote||'', r.carteElecteur||'', r.accord, ds]
+    return [r.numero||'', r.nom, r.matricule, r.age||'', r.telephone, r.section, r.comite||'', r.centreVote||'', r.bureauVote||'', r.carteElecteur||'', r.accord, r.paiement||'', r.montant||'', ds]
       .map(v => `"${String(v).replace(/"/g,'""')}"`).join(',');
   });
   const blob = new Blob(["﻿" + headers.join(',') + '\n' + rows.join('\n')], {type:'text/csv;charset=utf-8;'});
