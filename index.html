@@ -15,9 +15,9 @@
     --night-deep:#1F3347;
     --paper:#DCEEFD;
     --card:#FFFFFF;
-    --ink:#14263A;
-    --ink-soft:#33506B;
-    --hairline:#B9D6EE;
+    --ink:#0A1828;
+    --ink-soft:#1B3550;
+    --hairline:#7FA9CE;
     --accent:#395673;
     --accent-soft:#E4F2FE;
     --green:#0B7A3E;
@@ -37,40 +37,49 @@
     color:var(--ink);
     font-family:'Inter',sans-serif;
     min-height:100vh;
-    -webkit-font-smoothing:antialiased;
+    -webkit-font-smoothing:antialiased;font-size:15.5px;line-height:1.5;
   }
-  .flag-bar{height:6px;width:100%;background:linear-gradient(90deg, var(--sky) 0 50%, var(--night) 50% 100%);}
+
+  /* Cadre discret aux couleurs du drapeau du Sénégal */
+  .sn-frame{position:fixed;pointer-events:none;z-index:40;opacity:.6;}
+  .sn-frame.top,.sn-frame.bottom{left:0;right:0;height:6px;background:linear-gradient(90deg,#00853F 0 33.33%,#FDEF42 33.33% 66.66%,#E31B23 66.66% 100%);}
+  .sn-frame.top{top:0;} .sn-frame.bottom{bottom:0;}
+  .sn-frame.left,.sn-frame.right{top:0;bottom:0;width:6px;}
+  .sn-frame.left{left:0;background:#00853F;} .sn-frame.right{right:0;background:#E31B23;}
+  .sn-star{position:fixed;top:9px;left:50%;transform:translateX(-50%);z-index:41;pointer-events:none;opacity:.75;}
+
   .wrap{max-width:780px;margin:0 auto;padding:32px 20px 80px;}
 
   .letterhead{text-align:center;padding:14px 10px 16px;margin-bottom:6px;border-bottom:1px solid var(--hairline);}
-  .letterhead .lh-line{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em;color:var(--ink-soft);line-height:1.7;}
-  .letterhead .lh-republique{font-weight:700;letter-spacing:.12em;color:var(--ink);font-size:12px;}
-  .letterhead .lh-parti{font-family:'Fraunces',serif;font-weight:600;font-size:15px;color:var(--night);letter-spacing:0;margin-top:2px;}
+  .letterhead .lh-line{font-family:'Inter',sans-serif;font-size:13px;letter-spacing:.02em;color:var(--ink);font-weight:600;line-height:1.7;}
+  .letterhead .lh-republique{font-weight:800;letter-spacing:.1em;color:var(--ink);font-size:13.5px;text-transform:uppercase;}
+  .letterhead .lh-parti{font-family:'Fraunces',serif;font-weight:700;font-size:18px;color:var(--night-deep);letter-spacing:0;margin-top:2px;}
   .letterhead .lh-president{font-weight:600;color:var(--ink);}
-  .letterhead .lh-slogan{font-weight:700;color:var(--night);}
+  .letterhead .lh-slogan{font-weight:800;color:#1E5A8E;font-size:15px;}
 
   .masthead{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 0 20px;margin-bottom:24px;border-bottom:3px solid var(--night);}
-  .masthead h1{font-family:'Fraunces',serif;font-size:21px;font-weight:600;letter-spacing:-0.01em;margin:0;color:var(--night-deep);}
-  .masthead .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--night);margin:0 0 4px;font-weight:700;}
+  .masthead h1{font-family:'Fraunces',serif;font-size:23px;font-weight:700;letter-spacing:-0.01em;margin:0;color:var(--night-deep);}
+  .masthead .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--night-deep);margin:0 0 4px;font-weight:700;}
 
   .tabs{display:flex;gap:6px;margin-bottom:28px;}
-  .tab{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:10px 16px;border:1px solid var(--hairline);background:var(--card);color:var(--ink-soft);border-radius:8px 8px 0 0;cursor:pointer;border-bottom:none;position:relative;top:1px;}
+  .tab{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.05em;text-transform:uppercase;padding:10px 16px;font-weight:600;border:1px solid var(--hairline);background:var(--card);color:var(--ink-soft);border-radius:8px 8px 0 0;cursor:pointer;border-bottom:none;position:relative;top:1px;}
   .tab.active{color:var(--night);background:var(--paper);border-color:var(--night);border-bottom:1px solid var(--paper);font-weight:700;}
   .panel{display:none;}
   .panel.active{display:block;}
 
   .card{background:var(--card);border:1px solid var(--hairline);border-top:4px solid var(--night);border-radius:var(--radius);padding:32px;box-shadow:0 4px 16px rgba(31,51,71,0.08);}
   .card + .card{margin-top:16px;}
-  .doc-title{font-family:'Fraunces',serif;font-size:19px;font-weight:600;margin:0 0 4px;color:var(--night-deep);}
-  .doc-sub{font-size:13.5px;color:var(--ink-soft);margin:0 0 24px;line-height:1.5;}
-  .about{background:var(--accent-soft);border:1px solid var(--sky);border-radius:10px;padding:12px 14px;margin:0 0 22px;font-size:12.5px;line-height:1.55;color:var(--ink);}
+  .doc-title{font-family:'Fraunces',serif;font-size:22px;font-weight:700;margin:0 0 4px;color:var(--night-deep);}
+  .doc-sub{font-size:15px;color:var(--ink);margin:0 0 24px;line-height:1.5;}
+  .about{background:var(--accent-soft);border:1px solid var(--sky);border-radius:10px;padding:12px 14px;margin:0 0 22px;font-size:14px;line-height:1.6;color:var(--ink);}
   .about b{color:var(--night-deep);}
 
-  label{display:block;font-size:12.5px;font-weight:600;letter-spacing:.02em;color:var(--ink-soft);margin-bottom:6px;margin-top:20px;}
+  label{display:block;font-size:14px;font-weight:700;letter-spacing:.01em;color:var(--ink);margin-bottom:6px;margin-top:20px;}
   label:first-of-type{margin-top:0;}
-  input[type=text],input[type=tel],input[type=password],select.field{width:100%;padding:11px 13px;border:1px solid var(--hairline);border-radius:8px;font-family:'Inter',sans-serif;font-size:14.5px;background:#FBFDFF;color:var(--ink);}
+  input[type=text],input[type=tel],input[type=password],select.field{width:100%;padding:11px 13px;border:1px solid var(--hairline);border-radius:8px;font-family:'Inter',sans-serif;font-size:16px;background:#FFFFFF;color:var(--ink);border-width:1.5px;}
+  ::placeholder{color:#5A738A;opacity:1;}
   input:focus,select:focus{outline:2px solid var(--night);outline-offset:1px;border-color:var(--night);}
-  .hint{font-size:11.5px;color:#4F6A82;margin-top:5px;}
+  .hint{font-size:12.5px;color:var(--ink-soft);margin-top:5px;}
   input[type=file]{width:100%;padding:10px 13px;border:1px solid var(--hairline);border-radius:8px;font-family:'Inter',sans-serif;font-size:13.5px;background:#FBFDFF;color:var(--ink-soft);}
   input[type=file]::file-selector-button{font-family:'Inter',sans-serif;font-weight:600;font-size:12.5px;padding:7px 12px;margin-right:10px;border:none;border-radius:6px;background:var(--sky);color:var(--night-deep);cursor:pointer;}
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
@@ -84,17 +93,17 @@
   .accord-opt{flex:1;border:1.5px solid var(--hairline);border-radius:10px;padding:14px 12px;cursor:pointer;text-align:center;transition:border-color .15s, background .15s, transform .1s;background:#FBFDFF;}
   .accord-opt:hover{transform:translateY(-1px);}
   .accord-opt input{position:absolute;opacity:0;pointer-events:none;}
-  .accord-opt .label{font-weight:600;font-size:14px;}
-  .accord-opt .sub{font-size:11px;color:var(--ink-soft);margin-top:2px;}
+  .accord-opt .label{font-weight:700;font-size:15.5px;}
+  .accord-opt .sub{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
   .accord-opt.oui.checked{border-color:var(--green);background:var(--green-soft);}
 
   .sig-wrap{margin-top:8px;}
   .sig-box{position:relative;border:1.5px dashed var(--hairline);border-radius:10px;background:#FBFDFF;overflow:hidden;}
   canvas#sigpad{display:block;width:100%;height:160px;touch-action:none;cursor:crosshair;}
   .sig-baseline{position:absolute;left:16px;right:16px;bottom:34px;border-bottom:1px dotted #8AA4BC;pointer-events:none;}
-  .sig-caption{text-align:center;font-family:'Fraunces',serif;font-style:italic;font-size:12px;color:#4F6A82;padding:6px 0 10px;}
+  .sig-caption{text-align:center;font-family:'Fraunces',serif;font-style:italic;font-size:13px;color:var(--ink-soft);padding:6px 0 10px;}
   .sig-controls{display:flex;justify-content:flex-end;padding:0 0 10px;}
-  .btn-ghost{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;background:none;border:none;color:var(--ink-soft);cursor:pointer;text-decoration:underline;padding:4px;}
+  .btn-ghost{font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.04em;background:none;border:none;color:var(--ink-soft);cursor:pointer;text-decoration:underline;padding:4px;}
 
   .submit-row{margin-top:28px;}
   .btn-primary{width:100%;padding:14px;border:none;border-radius:9px;background:linear-gradient(135deg, var(--night) 0%, var(--night-deep) 100%);color:#FFFFFF;font-family:'Inter',sans-serif;font-weight:600;font-size:14.5px;cursor:pointer;transition:transform .12s, box-shadow .12s;box-shadow:0 3px 10px rgba(31,51,71,0.28);}
@@ -107,27 +116,27 @@
   .confirm{text-align:center;padding:20px 0 4px;}
   .confirm .stamp{width:64px;height:64px;border-radius:50%;border:2.5px solid var(--green);color:var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:28px;}
   .confirm h2{font-family:'Fraunces',serif;font-size:20px;margin:0 0 8px;}
-  .confirm p{color:var(--ink-soft);font-size:13.5px;line-height:1.6;margin:0 0 22px;}
-  .receipt{text-align:left;background:#FBFDFF;border:1px solid var(--hairline);border-radius:10px;padding:16px 18px;font-size:13px;margin-bottom:22px;}
+  .confirm p{color:var(--ink);font-size:15px;line-height:1.6;margin:0 0 22px;}
+  .receipt{text-align:left;background:#FBFDFF;border:1px solid var(--hairline);border-radius:10px;padding:16px 18px;font-size:14.5px;color:var(--ink);margin-bottom:22px;}
   .receipt div{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid #E3EEF8;}
   .receipt div:last-child{border-bottom:none;}
   .receipt .k{color:var(--ink-soft);}
-  .receipt .v{font-weight:600;font-family:'IBM Plex Mono',monospace;font-size:12.5px;text-align:right;}
+  .receipt .v{font-weight:700;font-family:'IBM Plex Mono',monospace;font-size:13.5px;text-align:right;}
 
   .gate{max-width:340px;margin:60px auto 0;text-align:center;}
   .gate .card{padding:28px;}
-  .gate p{font-size:13px;color:var(--ink-soft);margin-top:6px;}
+  .gate p{font-size:14.5px;color:var(--ink);margin-top:6px;}
   .stat-row{display:flex;gap:12px;margin-bottom:16px;}
   .stat{flex:1;background:var(--card);border:1px solid var(--hairline);border-radius:12px;padding:16px 18px;}
-  .stat .n{font-family:'Fraunces',serif;font-size:26px;font-weight:600;color:var(--night-deep);}
-  .stat .l{font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
+  .stat .n{font-family:'Fraunces',serif;font-size:28px;font-weight:700;color:var(--night-deep);}
+  .stat .l{font-size:12px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
   .toolbar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
-  .search{flex:1;min-width:140px;padding:10px 13px;border:1px solid var(--hairline);border-radius:8px;font-family:'Inter',sans-serif;font-size:13.5px;background:var(--card);color:var(--ink);}
-  .btn-export{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.03em;background:var(--accent-soft);color:var(--night-deep);border:1px solid var(--night);border-radius:8px;padding:9px 14px;cursor:pointer;font-weight:600;}
+  .search{flex:1;min-width:140px;padding:10px 13px;border:1px solid var(--hairline);border-radius:8px;font-family:'Inter',sans-serif;font-size:14.5px;background:var(--card);color:var(--ink);}
+  .btn-export{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.03em;background:var(--accent-soft);color:var(--night-deep);border:1px solid var(--night);border-radius:8px;padding:9px 14px;cursor:pointer;font-weight:600;}
   .btn-export:disabled{opacity:.5;cursor:not-allowed;}
   .btn-dark{background:var(--night);color:#fff;}
-  table{width:100%;border-collapse:collapse;font-size:13px;}
-  thead th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);padding:8px 10px;border-bottom:1.5px solid var(--night-deep);white-space:nowrap;}
+  table{width:100%;border-collapse:collapse;font-size:14.5px;color:var(--ink);}
+  thead th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink);padding:8px 10px;border-bottom:2px solid var(--night-deep);white-space:nowrap;}
   thead th.sortable{cursor:pointer;user-select:none;}
   thead th.sortable:hover{color:var(--ink);}
   thead th.sortable .arrow{margin-left:3px;}
@@ -136,22 +145,22 @@
   .pill{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;}
   .pill.oui{background:var(--green-soft);color:var(--green);}
   .pill.non{background:var(--red-soft);color:var(--red);}
-  .mono{font-family:'IBM Plex Mono',monospace;font-size:12px;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:13px;}
   .empty{text-align:center;padding:50px 10px;color:var(--ink-soft);font-size:13.5px;}
   .sig-thumb{width:56px;height:26px;background:#fff;border:1px solid var(--hairline);border-radius:4px;cursor:pointer;object-fit:contain;}
   .photo-thumb{width:34px;height:42px;border:1px solid var(--hairline);border-radius:4px;cursor:pointer;object-fit:cover;background:#fff;}
-  .btn-row-print{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.03em;background:none;border:1px solid var(--hairline);color:var(--ink-soft);border-radius:6px;padding:4px 8px;cursor:pointer;white-space:nowrap;}
+  .btn-row-print{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.02em;background:#fff;border:1px solid var(--night);color:var(--night-deep);border-radius:6px;padding:4px 8px;cursor:pointer;white-space:nowrap;}
   .btn-row-print:hover{border-color:var(--night);color:var(--night-deep);}
   .btn-row-danger:hover{border-color:var(--red);color:var(--red);}
 
   .lightbox{position:fixed;inset:0;background:rgba(20,38,58,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:20px;}
   .lightbox.show{display:flex;}
   .lightbox > img{max-width:400px;width:100%;background:#fff;border-radius:10px;padding:16px;}
-  .refresh-note{font-size:11.5px;color:#4F6A82;margin-bottom:12px;}
-  .contact-note{font-size:12.5px;color:var(--ink);background:var(--accent-soft);border:1px solid var(--sky);border-radius:10px;padding:10px 14px;margin-bottom:16px;}
+  .refresh-note{font-size:12.5px;color:var(--ink-soft);margin-bottom:12px;}
+  .contact-note{font-size:14px;color:var(--ink);background:var(--accent-soft);border:1px solid var(--sky);border-radius:10px;padding:10px 14px;margin-bottom:16px;}
   .contact-note b{color:var(--night-deep);}
-  .sub-title{font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);margin:0 0 10px;}
-  .comite-row{display:grid;grid-template-columns:1.3fr 1fr 1fr auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #E3EEF8;font-size:13px;}
+  .sub-title{font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--night-deep);margin:0 0 10px;}
+  .comite-row{display:grid;grid-template-columns:1.3fr 1fr 1fr auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #E3EEF8;font-size:14.5px;}
   .comite-row .code{font-family:'IBM Plex Mono',monospace;background:var(--accent-soft);border-radius:6px;padding:3px 7px;display:inline-block;}
   .grid-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
   .grid-form label{margin-top:0;}
@@ -168,7 +177,8 @@
 </style>
 </head>
 <body>
-<div class="flag-bar"></div>
+<div class="sn-frame top"></div><div class="sn-frame bottom"></div><div class="sn-frame left"></div><div class="sn-frame right"></div>
+<svg class="sn-star" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><polygon points="12,1.5 14.9,8.9 22.8,9.3 16.6,14.3 18.7,22 12,17.7 5.3,22 7.4,14.3 1.2,9.3 9.1,8.9" fill="#00853F"/></svg>
 <div class="wrap">
 
   <div class="letterhead">
@@ -232,15 +242,20 @@
         </div>
       </div>
 
-      <label for="carte-electeur">Numéro de carte d'électeur <span style="font-weight:400;color:#4F6A82;">(optionnel)</span></label>
+      <label for="carte-electeur">Numéro de carte d'électeur <span style="font-weight:400;color:var(--ink-soft);">(optionnel)</span></label>
       <input type="text" id="carte-electeur" placeholder="Numéro de la carte d'électeur (facultatif)" />
 
       <label for="photo">Photo du membre</label>
       <div class="photo-box">
         <div class="photo-preview" id="photo-preview">Aucune photo</div>
         <div style="flex:1;">
-          <input type="file" id="photo" accept="image/*" capture="user" />
-          <div class="hint">Prenez un selfie ou choisissez une photo de face, visage bien visible. Elle figurera sur votre carte de membre.</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button type="button" class="btn-export btn-dark" id="photo-cam-btn">📷 Prendre une photo</button>
+            <button type="button" class="btn-export" id="photo-file-btn">Choisir un fichier</button>
+          </div>
+          <input type="file" id="photo" accept="image/*" style="display:none;" />
+          <input type="file" id="photo-capture" accept="image/*" capture="user" style="display:none;" />
+          <div class="hint" id="photo-msg">Photo de face, visage bien visible : elle figurera sur votre carte de membre.</div>
         </div>
       </div>
 
@@ -261,7 +276,7 @@
         </div>
         <p class="sig-caption">Signez ci-dessus avec le doigt ou la souris</p>
         <div class="sig-controls" style="justify-content:space-between;">
-          <button type="button" id="open-workspace-btn" style="background:none;border:none;color:#6F8AA3;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.04em;cursor:pointer;padding:4px;opacity:.55;transition:opacity .15s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.55">Espace responsable</button>
+          <button type="button" id="open-workspace-btn" style="background:none;border:none;color:#1B3550;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.04em;cursor:pointer;padding:4px;opacity:.85;transition:opacity .15s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.85">Espace responsable</button>
           <button type="button" class="btn-ghost" id="clear-sig">Effacer la signature</button>
         </div>
       </div>
@@ -365,6 +380,21 @@
 
 <div class="lightbox" id="lightbox"><img id="lightbox-img" alt="" /></div>
 
+<div class="lightbox" id="cam-modal">
+  <div class="card" style="max-width:420px;width:100%;padding:18px;text-align:center;">
+    <p class="doc-title" style="margin-bottom:10px;">Prendre une photo</p>
+    <div style="position:relative;background:#000;border-radius:10px;overflow:hidden;aspect-ratio:4/5;">
+      <video id="cam-video" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;"></video>
+    </div>
+    <div class="hint" style="margin:8px 0;">Placez votre visage au centre, de face, dans un endroit bien éclairé.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
+      <button type="button" class="btn-export btn-dark" id="cam-shot">Capturer</button>
+      <button type="button" class="btn-export" id="cam-flip">Changer de caméra</button>
+      <button type="button" class="btn-export" id="cam-cancel">Annuler</button>
+    </div>
+  </div>
+</div>
+
 <div class="lightbox" id="qr-modal">
   <div class="card" style="max-width:380px;width:100%;text-align:center;padding:28px 24px;max-height:96vh;overflow-y:auto;">
     <p class="doc-title" style="margin-bottom:4px;">QR code d'adhésion</p>
@@ -390,7 +420,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 <script>
 // ================= CONFIGURATION =================
 // 1) Collez ici l'URL de déploiement Google Apps Script (fichier Code.gs fourni).
-const API_URL = "https://script.google.com/macros/s/AKfycbyBqdbUA4xsOuYI_s8oia5YsIqGZAgvTKoWSnvwxpqGt36J0k02G5ynhbD4sxVG2Kqx/exec";
+const API_URL = "COLLER_ICI_URL_APPS_SCRIPT";
 // 2) Code d'accès de la COORDINATION (responsable du mouvement) : il se définit ICI.
 //    Lors de la 1re connexion avec ce code, le serveur l'enregistre ; ensuite il est vérifié côté serveur.
 //    Modifiez-le AVANT la première connexion. Les responsables de comité ont chacun leur propre code
@@ -532,32 +562,76 @@ function loadImage(src){
     img.src = src;
   });
 }
+function cropToPortrait(src, sw0, sh0){
+  const W = 300, H = 375; // portrait 4:5
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d');
+  const scale = Math.max(W/sw0, H/sh0);
+  const sw = W/scale, sh = H/scale;
+  const sx = (sw0 - sw)/2, sy = Math.max(0, (sh0 - sh)/3);
+  g.fillStyle = '#fff'; g.fillRect(0,0,W,H);
+  g.drawImage(src, sx, sy, sw, sh, 0, 0, W, H);
+  return c.toDataURL('image/jpeg', 0.8);
+}
 async function compressPhoto(file){
   const url = URL.createObjectURL(file);
-  try{
-    const img = await loadImage(url);
-    const W = 300, H = 375; // portrait 4:5
-    const c = document.createElement('canvas'); c.width = W; c.height = H;
-    const g = c.getContext('2d');
-    const scale = Math.max(W/img.width, H/img.height);
-    const sw = W/scale, sh = H/scale;
-    const sx = (img.width - sw)/2, sy = Math.max(0, (img.height - sh)/3);
-    g.fillStyle = '#fff'; g.fillRect(0,0,W,H);
-    g.drawImage(img, sx, sy, sw, sh, 0, 0, W, H);
-    return c.toDataURL('image/jpeg', 0.8);
-  } finally { URL.revokeObjectURL(url); }
+  try{ const img = await loadImage(url); return cropToPortrait(img, img.width, img.height); }
+  finally { URL.revokeObjectURL(url); }
 }
-document.getElementById('photo').addEventListener('change', async (e)=>{
-  const f = e.target.files[0];
-  const box = document.getElementById('photo-preview');
-  photoData = '';
-  if(!f){ box.textContent = 'Aucune photo'; return; }
-  try{
-    photoData = await compressPhoto(f);
-    box.innerHTML = `<img src="${photoData}" alt="Photo" />`;
-  }catch(err){
-    box.textContent = 'Photo illisible';
+function setPhoto(dataUrl){
+  photoData = dataUrl;
+  document.getElementById('photo-preview').innerHTML = dataUrl ? `<img src="${dataUrl}" alt="Photo" />` : 'Aucune photo';
+}
+async function handlePhotoFile(input){
+  const f = input.files[0];
+  if(!f) return;
+  try{ setPhoto(await compressPhoto(f)); }catch(err){ photoData=''; document.getElementById('photo-preview').textContent = 'Photo illisible'; }
+  input.value = '';
+}
+document.getElementById('photo').addEventListener('change', e=>handlePhotoFile(e.target));
+document.getElementById('photo-capture').addEventListener('change', e=>handlePhotoFile(e.target));
+document.getElementById('photo-file-btn').addEventListener('click', ()=>document.getElementById('photo').click());
+
+// ---- prise de photo directe avec la caméra
+let camStream = null, camFacing = 'user';
+function stopCam(){
+  if(camStream){ camStream.getTracks().forEach(t=>t.stop()); camStream = null; }
+  document.getElementById('cam-video').srcObject = null;
+  document.getElementById('cam-modal').classList.remove('show');
+}
+async function startCam(){
+  const video = document.getElementById('cam-video');
+  if(camStream){ camStream.getTracks().forEach(t=>t.stop()); }
+  camStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:camFacing, width:{ideal:1280}, height:{ideal:1280}}, audio:false});
+  video.srcObject = camStream;
+  await video.play().catch(()=>{});
+}
+document.getElementById('photo-cam-btn').addEventListener('click', async ()=>{
+  const msg = document.getElementById('photo-msg');
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    document.getElementById('photo-capture').click(); // repli : appareil photo du téléphone
+    return;
   }
+  try{
+    camFacing = 'user';
+    document.getElementById('cam-modal').classList.add('show');
+    await startCam();
+  }catch(err){
+    stopCam();
+    msg.textContent = "Caméra inaccessible (autorisation refusée ?). Utilisation de l'appareil photo du téléphone ou d'un fichier.";
+    document.getElementById('photo-capture').click();
+  }
+});
+document.getElementById('cam-flip').addEventListener('click', async ()=>{
+  camFacing = camFacing === 'user' ? 'environment' : 'user';
+  try{ await startCam(); }catch(e){ camFacing = camFacing === 'user' ? 'environment' : 'user'; }
+});
+document.getElementById('cam-cancel').addEventListener('click', stopCam);
+document.getElementById('cam-shot').addEventListener('click', ()=>{
+  const v = document.getElementById('cam-video');
+  if(!v.videoWidth){ return; }
+  setPhoto(cropToPortrait(v, v.videoWidth, v.videoHeight));
+  stopCam();
 });
 
 // ================= DOUBLON CNI =================
@@ -631,8 +705,7 @@ document.getElementById('submit-btn').addEventListener('click', async ()=>{
 
 document.getElementById('new-entry-btn').addEventListener('click', ()=>{
   ['nom','cni','quartier','tel','centre-vote','bureau-vote','carte-electeur'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('photo').value=''; photoData='';
-  document.getElementById('photo-preview').textContent='Aucune photo';
+  document.getElementById('photo').value=''; setPhoto('');
   document.getElementById('comite').value = urlComite || '';
   document.querySelectorAll('.accord-opt').forEach(o=>o.classList.remove('checked'));
   document.querySelectorAll('input[name=accord]').forEach(i=>i.checked=false);
@@ -843,7 +916,7 @@ function renderTable(records, offset){
     const idx = offset + i, d = new Date(r.date);
     return `<tr>
       <td>${r.photo ? `<img class="photo-thumb" src="${safeSrc(r.photo)}" onclick="openLightbox(currentRecords[${idx}].photo)" />` : '—'}</td>
-      <td><b>${escapeHtml(r.nom)}</b><br><span class="mono" style="color:#4F6A82;">${escapeHtml(r.numero||'')}</span></td>
+      <td><b>${escapeHtml(r.nom)}</b><br><span class="mono" style="color:var(--ink-soft);">${escapeHtml(r.numero||'')}</span></td>
       <td class="mono hm">${escapeHtml(r.matricule)}</td>
       <td>${escapeHtml(r.comite||'—')}<br><span class="hint">${escapeHtml(r.section||'')}</span></td>
       <td class="hm">${escapeHtml(r.centreVote||'—')}<br><span class="hint">Bureau ${escapeHtml(r.bureauVote||'—')}</span></td>
@@ -936,22 +1009,22 @@ async function drawCard(r, side){
     g.save(); g.beginPath(); g.arc(48+80, 44+80, 80, 0, Math.PI*2); g.closePath(); g.clip();
     g.drawImage(logo, 48, 44, 160, 160); g.restore();
     // titres
-    g.fillStyle = NIGHT2; g.font = `600 17px ${MONO}`; g.fillText('RÉPUBLIQUE DU SÉNÉGAL', 236, 78);
-    fitText(g, 'Mouvement ADK', 236, 122, 520, 44, 600, SERIF, NIGHT, 26);
-    fitText(g, 'Agir pour le Développement de Koungheul', 236, 154, 520, 23, 500, SANS, NIGHT2, 14);
-    fitText(g, 'Ànd Doolel Kaw Jotna', 236, 188, 520, 27, 700, SANS, '#2B6CA3', 16);
+    g.fillStyle = NIGHT; g.font = `700 18px ${MONO}`; g.fillText('RÉPUBLIQUE DU SÉNÉGAL', 236, 78);
+    fitText(g, 'Mouvement ADK', 236, 122, 520, 46, 700, SERIF, NIGHT, 26);
+    fitText(g, 'Agir pour le Développement de Koungheul', 236, 154, 520, 24, 700, SANS, NIGHT, 14);
+    fitText(g, 'Ànd Doolel Kaw Jotna', 236, 188, 520, 29, 800, SANS, '#1E5A8E', 16);
     // filet
     g.fillStyle = SKY; g.fillRect(48, 214, CW-96, 4);
     // corps
-    g.fillStyle = NIGHT2; g.font = `600 18px ${MONO}`; g.fillText('CARTE DE MEMBRE', 56, 258);
-    g.font = `600 44px ${SERIF}`;
+    g.fillStyle = NIGHT; g.font = `700 20px ${MONO}`; g.fillText('CARTE DE MEMBRE', 56, 258);
+    g.font = `700 44px ${SERIF}`;
     const lines = wrapLines(g, r.nom || '', 650, 2);
     const nameSize = lines.length > 1 ? 36 : 44;
-    g.font = `600 ${nameSize}px ${SERIF}`; g.fillStyle = NIGHT;
+    g.font = `700 ${nameSize}px ${SERIF}`; g.fillStyle = NIGHT;
     lines.forEach((ln,i)=> g.fillText(ln, 56, 306 + i*(nameSize+6)));
     let y = 306 + (lines.length-1)*(nameSize+6) + 44;
-    fitText(g, 'Comité : ' + (r.comite || '—'), 56, y, 650, 26, 600, SANS, NIGHT2, 15); y += 36;
-    fitText(g, 'Centre de vote : ' + (r.centreVote || '—') + '  ·  Bureau : ' + (r.bureauVote || '—'), 56, y, 650, 21, 500, SANS, NIGHT, 13);
+    fitText(g, 'Comité : ' + (r.comite || '—'), 56, y, 650, 28, 700, SANS, NIGHT, 15); y += 36;
+    fitText(g, 'Centre de vote : ' + (r.centreVote || '—') + '  ·  Bureau : ' + (r.bureauVote || '—'), 56, y, 650, 23, 700, SANS, NIGHT, 13);
     // photo
     const px = 760, py = 236, pw = 200, ph = 250;
     g.fillStyle = '#EAF5FE'; roundRect(g, px-6, py-6, pw+12, ph+12, 16); g.fill();
@@ -965,13 +1038,13 @@ async function drawCard(r, side){
     g.fillText(ok ? 'Membre actif' : 'Non confirmé', px + pw/2, py+ph+49); g.textAlign = 'left';
     // code-barres
     drawBarcode(g, barcodeValue(r), 56, 506, 650, 64);
-    g.fillStyle = NIGHT; g.font = `500 18px ${MONO}`; g.textAlign = 'center';
+    g.fillStyle = '#000'; g.font = `700 20px ${MONO}`; g.textAlign = 'center';
     g.fillText(barcodeValue(r), 56 + 325, 596); g.textAlign = 'left';
   } else {
     g.fillStyle = '#EAF5FE'; g.fillRect(0,0,CW,CH);
     if(CARTE_THEME === 'drapeau'){ drawTricolor(g, 0, 0, CW, 26); drawTricolor(g, 0, CH-26, CW, 26); }
     else { g.fillStyle = NIGHT2; g.fillRect(0,0,CW,26); g.fillStyle = SKY; g.fillRect(0,CH-26,CW,26); }
-    g.fillStyle = NIGHT2; g.font = `600 20px ${MONO}`; g.fillText('INFORMATIONS DU MEMBRE', 48, 80);
+    g.fillStyle = NIGHT; g.font = `700 22px ${MONO}`; g.fillText('INFORMATIONS DU MEMBRE', 48, 80);
     g.save(); g.beginPath(); g.arc(CW-48-50, 62, 42, 0, Math.PI*2); g.closePath(); g.clip(); g.drawImage(logo, CW-48-92, 20, 84, 84); g.restore();
     const d = new Date(r.date);
     const rows = [
@@ -987,21 +1060,21 @@ async function drawCard(r, side){
     if(r.carteElecteur) rows.splice(3, 0, ['Carte d\'électeur', r.carteElecteur]);
     let y = 128;
     rows.forEach(([k,v])=>{
-      g.fillStyle = NIGHT2; g.font = `500 22px ${SANS}`; g.fillText(k, 48, y);
-      g.textAlign = 'right'; fitText(g, String(v), CW-48, y, 520, 24, 700, SANS, NIGHT, 14); g.textAlign = 'left';
-      g.fillStyle = '#B9D6EE'; g.fillRect(48, y+10, CW-96, 2);
+      g.fillStyle = NIGHT; g.font = `600 23px ${SANS}`; g.fillText(k, 48, y);
+      g.textAlign = 'right'; fitText(g, String(v), CW-48, y, 520, 25, 800, SANS, '#000', 14); g.textAlign = 'left';
+      g.fillStyle = '#7FA9CE'; g.fillRect(48, y+10, CW-96, 2);
       y += 44;
     });
     // signature
-    g.fillStyle = NIGHT2; g.font = `500 17px ${SANS}`; g.fillText('Signature du membre', 48, CH-150);
+    g.fillStyle = NIGHT; g.font = `600 19px ${SANS}`; g.fillText('Signature du membre', 48, CH-150);
     g.fillStyle = '#fff'; roundRect(g, 48, CH-138, 300, 84, 10); g.fill();
     if(r.signature){ try{ const sg = await loadImage(r.signature); const k = Math.min(280/sg.width, 70/sg.height); const w = sg.width*k, h = sg.height*k; g.drawImage(sg, 48+(300-w)/2, CH-138+(84-h)/2, w, h); }catch(e){} }
     // pied
-    g.fillStyle = NIGHT; g.font = `600 16px ${SANS}`; g.textAlign = 'right';
+    g.fillStyle = '#000'; g.font = `700 19px ${SANS}`; g.textAlign = 'right';
     g.fillText('Mouvement ADK — Ànd Doolel Kaw Jotna', CW-48, CH-108);
-    g.font = `400 15px ${SANS}`; g.fillStyle = NIGHT2;
-    g.fillText('Président : Mamadou DIOUF dit « Kaw »', CW-48, CH-84);
-    g.fillText('Ensemble pour le développement de Koungheul', CW-48, CH-62);
+    g.font = `600 17px ${SANS}`; g.fillStyle = NIGHT;
+    g.fillText('Président : Mamadou DIOUF dit « Kaw »', CW-48, CH-82);
+    g.fillText('Ensemble pour le développement de Koungheul', CW-48, CH-58);
     g.textAlign = 'left';
   }
   return c.toDataURL('image/png');
@@ -1041,13 +1114,13 @@ const PRINT_CSS = `
   .fiche-title{font-family:'Fraunces',serif;font-size:19px;font-weight:600;margin:3px 0 0;}
   .fiche-body{display:flex;gap:22px;align-items:flex-start;}
   .fiche-photo{width:120px;height:150px;object-fit:cover;border:1px solid #B9D6EE;border-radius:8px;}
-  .fiche table{width:100%;border-collapse:collapse;font-size:14px;}
+  .fiche table{width:100%;border-collapse:collapse;font-size:15px;}
   .fiche table td{padding:9px 0;border-bottom:1px solid #E3EEF8;vertical-align:top;}
-  .fiche table td.k{color:#33506B;width:170px;}
+  .fiche table td.k{color:#1B3550;font-weight:500;width:170px;}
   .fiche table td.v{font-weight:600;}
-  .fiche-sig-label{font-size:11px;color:#4F6A82;margin:22px 0 6px;}
+  .fiche-sig-label{font-size:11px;color:var(--ink-soft);margin:22px 0 6px;}
   .fiche-sig-img{max-width:280px;border:1px solid #B9D6EE;border-radius:8px;padding:10px;background:#fff;display:block;}
-  .fiche-foot{margin-top:30px;font-size:10.5px;color:#4F6A82;border-top:1px dotted #8AA4BC;padding-top:10px;}
+  .fiche-foot{margin-top:30px;font-size:10.5px;color:var(--ink-soft);border-top:1px dotted #8AA4BC;padding-top:10px;}
   .bc{width:260px;margin-top:18px;}
   .carte-page{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8mm;padding:8mm;page-break-after:always;}
   .carte-page:last-child{page-break-after:auto;}
