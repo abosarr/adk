@@ -327,6 +327,7 @@
           <div><label for="cm-code">Code d'accès du comité</label><input type="text" id="cm-code" placeholder="Laisser vide pour en générer un" /></div>
           <div class="full"><button class="btn-export btn-dark" id="cm-save">Créer / mettre à jour le comité</button> <span class="hint" id="cm-msg"></span></div>
         </div>
+        <div style="margin-top:14px;"><button class="btn-export btn-dark" id="cm-qr-all">Télécharger les QR codes de tous les comités (PNG)</button></div>
         <div id="comites-list" style="margin-top:14px;"></div>
       </div>
 
@@ -818,7 +819,7 @@ function renderComitesAdmin(){
       <span><b>${escapeHtml(c.nom)}</b><br><span class="hint">${c.count||0} adhésion(s)</span></span>
       <span>${escapeHtml(c.responsable||'—')}<br><span class="hint">${escapeHtml(c.telephone||'')}</span></span>
       <span><span class="code">${escapeHtml(c.code)}</span></span>
-      <span><button class="btn-row-print" onclick="editComite(${i})">Modifier</button> <button class="btn-row-print btn-row-danger" onclick="deleteComite(${i})">Supprimer</button></span>
+      <span><button class="btn-row-print" onclick="downloadComiteQr(${i})">QR</button> <button class="btn-row-print" onclick="editComite(${i})">Modifier</button> <button class="btn-row-print btn-row-danger" onclick="deleteComite(${i})">Supprimer</button></span>
     </div>`).join('');
 }
 function editComite(i){
@@ -1251,6 +1252,52 @@ document.getElementById('qr-print-btn').addEventListener('click', ()=>{
       <p style="font-family:'IBM Plex Mono',monospace;font-size:12px;margin-top:22px;word-break:break-all;">${escapeHtml(link)}</p>
       <div class="fiche-foot" style="margin-top:30px;">Président : Mamadou DIOUF dit « Kaw » — Ànd Doolel Kaw Jotna — Ensemble pour le développement de Koungheul</div>
     </div>`);
+});
+
+
+// ---- QR code (affiche PNG) de chaque comité
+async function drawComitePoster(nom){
+  try{ await Promise.all([document.fonts.load('700 40px Inter'), document.fonts.load('400 30px Inter')]); }catch(e){}
+  const W = 1240, H = 1754, link = getAdhesionLink(nom);
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d'), SANS = 'Inter, Arial, sans-serif';
+  g.fillStyle = '#fff'; g.fillRect(0,0,W,H);
+  drawTricolor(g, 0, 0, W, 26); drawTricolor(g, 0, H-26, W, 26);
+  const logo = await loadImage(LOGO_SRC);
+  g.save(); g.beginPath(); g.arc(W/2, 150, 90, 0, Math.PI*2); g.closePath(); g.clip(); g.drawImage(logo, W/2-90, 60, 180, 180); g.restore();
+  g.textAlign = 'center';
+  g.fillStyle = '#0A1828'; g.font = `800 28px ${SANS}`; g.fillText('RÉPUBLIQUE DU SÉNÉGAL', W/2, 290);
+  g.fillStyle = '#1F3347'; g.font = `800 38px ${SANS}`; g.fillText('Mouvement Agir pour le Développement de Koungheul', W/2, 340);
+  g.fillStyle = '#1E5A8E'; g.font = `800 44px ${SANS}`; g.fillText('Ànd Doolel Kaw Jotna', W/2, 400);
+  g.fillStyle = '#1F3347'; g.font = `800 70px ${SANS}`; g.fillText('Rejoignez le mouvement !', W/2, 510);
+  let px = 60; do{ g.font = `800 ${px}px ${SANS}`; px -= 2; }while(g.measureText(nom).width > W-160 && px > 24);
+  g.fillStyle = '#395673'; g.fillText(nom, W/2, 590);
+  g.fillStyle = '#1B3550'; g.font = `500 32px ${SANS}`;
+  g.fillText("Scannez ce QR code avec l'appareil photo de votre téléphone", W/2, 650);
+  g.fillText('pour adhérer en ligne à ce comité.', W/2, 696);
+  const qi = await loadImage(buildQrDataURL(link, 10));
+  g.imageSmoothingEnabled = false; g.drawImage(qi, (W-760)/2, 740, 760, 760); g.imageSmoothingEnabled = true;
+  g.fillStyle = '#1F3347'; g.font = `700 24px ${SANS}`;
+  let ly = 1545, line = link;
+  while(g.measureText(line).width > W-120 && line.length > 20){ line = line.slice(0,-4); }
+  g.fillText(line === link ? link : line + '…', W/2, ly);
+  g.fillStyle = '#0A1828'; g.font = `700 30px ${SANS}`; g.fillText('Président : Mamadou DIOUF dit « Kaw »', W/2, 1620);
+  g.fillStyle = '#1B3550'; g.font = `500 28px ${SANS}`; g.fillText('Ensemble pour le développement de Koungheul', W/2, 1668);
+  return c.toDataURL('image/png');
+}
+async function downloadComiteQr(i){
+  const c = comitesAdmin[i]; if(!c) return;
+  triggerDownload(await drawComitePoster(c.nom), 'QR_ADK_' + fileSafe(c.nom) + '.png');
+}
+document.getElementById('cm-qr-all').addEventListener('click', async ()=>{
+  if(!comitesAdmin.length){ alert("Créez d'abord au moins un comité."); return; }
+  const btn = document.getElementById('cm-qr-all'), old = btn.textContent; btn.disabled = true;
+  for(let i=0;i<comitesAdmin.length;i++){
+    btn.textContent = 'QR ' + (i+1) + '/' + comitesAdmin.length + '…';
+    await downloadComiteQr(i);
+    await new Promise(r=>setTimeout(r, 400));
+  }
+  btn.textContent = old; btn.disabled = false;
 });
 
 // ================= DIVERS =================
