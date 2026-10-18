@@ -270,8 +270,8 @@
 
       <label for="cni">Numéro de carte d'identité (CNI)</label>
       <input type="text" id="cni" placeholder="Numéro de la carte d'identité" />
-      <div class="hint">Une seule adhésion est conservée par numéro de CNI ; une nouvelle soumission remplace la précédente.</div>
-      <p class="hint" id="dup-warning" style="display:none;color:var(--night-deep);background:var(--accent-soft);border:1px solid var(--sky);border-radius:8px;padding:8px 10px;margin-top:8px;"></p>
+      <div class="hint">Une personne ne peut s'inscrire qu'une seule fois et dans un seul comité (une adhésion par numéro de CNI).</div>
+      <p class="hint" id="dup-warning" style="display:none;color:var(--red);background:var(--red-soft);border:1px solid var(--red);border-radius:8px;padding:8px 10px;margin-top:8px;font-weight:600;"></p>
 
       <label for="tel">Téléphone</label>
       <input type="tel" id="tel" placeholder="Ex : 77 123 45 67" />
@@ -800,22 +800,35 @@ document.getElementById('cam-shot').addEventListener('click', ()=>{
 });
 
 // ================= DOUBLON CNI =================
+// Une personne (= un numéro de CNI) ne peut s'inscrire qu'une seule fois, dans un seul comité.
 const cniInput = document.getElementById('cni');
 let dupCheckTimer;
+function normCni(v){ return String(v||'').replace(/[\s.\-_\/]+/g,'').toUpperCase(); }
+function dupMessage(d){
+  return "Ce numéro de CNI est déjà inscrit" + (d && d.nom ? " (" + d.nom + ")" : "") + (d && d.comite ? " au comité « " + d.comite + " »" : "") +
+         ". Une personne ne peut pas s'inscrire deux fois ni dans deux comités.";
+}
+function showDupWarning(d){
+  const warn = document.getElementById('dup-warning');
+  if(d){ warn.textContent = dupMessage(d); warn.style.display = 'block'; } else { warn.style.display = 'none'; }
+}
+// Retourne les infos du membre déjà inscrit avec ce CNI, ou null si le CNI est libre.
+async function findDuplicate(cni){
+  if(!cni || !API_READY) return null;
+  try{
+    const data = await api({action:'check', matricule:cni});
+    if(data && data.ok && data.exists) return data;
+  }catch(e){}
+  return null;
+}
 cniInput.addEventListener('input', ()=>{
   clearTimeout(dupCheckTimer);
-  const warn = document.getElementById('dup-warning');
-  warn.style.display='none';
-  const cni = cniInput.value.trim();
+  showDupWarning(null);
+  const cni = normCni(cniInput.value);
   if(!cni || !API_READY) return;
   dupCheckTimer = setTimeout(async ()=>{
-    try{
-      const data = await api({action:'check', matricule:cni});
-      if(data && data.ok && data.exists){
-        warn.textContent = "Une adhésion existe déjà pour ce numéro de CNI (" + data.nom + "). L'envoyer remplacera la précédente.";
-        warn.style.display='block';
-      }
-    }catch(e){}
+    const d = await findDuplicate(cni);
+    if(normCni(cniInput.value) === cni) showDupWarning(d); // ignore une réponse périmée
   }, 500);
 });
 
@@ -946,9 +959,16 @@ function missingForStep(n){
   if(n === 5){ if(!document.querySelector('input[name=accord]:checked')) m.push('adhésion'); const pm = payMissing() || payValidationMissing(); if(pm) m.push(pm); if(!hasSignature) m.push('signature'); }
   return m;
 }
-document.getElementById('step-next').addEventListener('click', ()=>{
+document.getElementById('step-next').addEventListener('click', async ()=>{
   const miss = missingForStep(currentStep), err = document.getElementById('error-msg');
   if(miss.length){ err.textContent = 'Merci de compléter : ' + miss.join(', ') + '.'; err.style.display = 'block'; return; }
+  if(currentStep === 1){
+    const btn = document.getElementById('step-next'), old = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Vérification…';
+    const d = await findDuplicate(normCni(document.getElementById('cni').value));
+    btn.disabled = false; btn.textContent = old;
+    if(d){ showDupWarning(d); err.textContent = dupMessage(d); err.style.display = 'block'; return; }
+  }
   showStep(currentStep + 1);
 });
 document.getElementById('step-prev').addEventListener('click', ()=>showStep(currentStep - 1));
@@ -960,7 +980,7 @@ showStep(1, true);
 // ================= ENVOI =================
 document.getElementById('submit-btn').addEventListener('click', async ()=>{
   const g = id => document.getElementById(id).value.trim();
-  const nom = g('nom').toUpperCase(), cni = g('cni'), quartier = g('quartier'), telephone = g('tel'), age = g('age');
+  const nom = g('nom').toUpperCase(), cni = normCni(g('cni')), quartier = g('quartier'), telephone = g('tel'), age = g('age');
   const comite = g('comite'), centreVote = g('centre-vote'), bureauVote = g('bureau-vote'), carteElecteur = g('carte-electeur');
   const notVoter = document.getElementById('pas-electeur').checked;
   const accordEl = document.querySelector('input[name=accord]:checked');
@@ -982,9 +1002,17 @@ document.getElementById('submit-btn').addEventListener('click', async ()=>{
   }
 
   const btn = document.getElementById('submit-btn');
-  btn.disabled = true; btn.textContent = 'Envoi en cours…';
+  btn.disabled = true; btn.textContent = 'Vérification…';
+  const dup = await findDuplicate(cni);
+  if(dup){
+    showDupWarning(dup); showStep(1);
+    errorEl.textContent = dupMessage(dup); errorEl.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Confirmer et envoyer';
+    return;
+  }
+  btn.textContent = 'Envoi en cours…';
   const record = {
-    nom, matricule: cni, age, section: quartier, telephone, comite, centreVote, bureauVote, carteElecteur,
+    nom, matricule: cni, refuserDoublon: '1', age, section: quartier, telephone, comite, centreVote, bureauVote, carteElecteur,
     accord: accordEl.value, paiement: payChoice() === 'symbolique' ? 'Symbolique' : 'Aucun', montant: payAmount(), modePaiement: payChoice() === 'aucun' ? '' : document.getElementById('pay-mode').value, referencePaiement: payChoice() === 'aucun' ? '' : document.getElementById('pay-ref').value.trim(), paiementValide: payChoice() === 'aucun' ? 'Non' : 'Oui', signature: signatureDataURL(), photo: photoData, date: new Date().toISOString()
   };
   try{
@@ -1021,7 +1049,7 @@ document.getElementById('new-entry-btn').addEventListener('click', ()=>{
   document.querySelectorAll('input[name=accord]').forEach(i=>i.checked=false);
   resetPay();
   clearSignature();
-  document.getElementById('dup-warning').style.display='none';
+  showDupWarning(null);
   document.getElementById('confirm-card').style.display='none';
   document.getElementById('form-card').style.display='block';
   showStep(1);
